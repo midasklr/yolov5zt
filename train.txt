@@ -1,0 +1,1 @@
+python train.py --weights weights/yolov5l.pt --data data/mini.yaml --epochs 5 --batch-size 8 --adam

@@ -1,4 +1,9 @@
 # Repo-specific GitIgnore ----------------------------------------------------------------------------------------------
+TensorRT-build
+TensorRT
+ZTDIVA_YOLOV5_LIB
+=0.11.0
+=3.2.2
 *.jpg
 *.jpeg
 *.png

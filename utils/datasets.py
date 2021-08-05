@@ -188,6 +188,7 @@ class LoadImages:  # for inference
         if self.count == self.nf:
             raise StopIteration
         path = self.files[self.count]
+        # print("path:",path)
 
         if self.video_flag[self.count]:
             # Read video
@@ -210,12 +211,16 @@ class LoadImages:  # for inference
             # Read image
             self.count += 1
             img0 = cv2.imread(path)  # BGR
+            #print(img0[850:860,850:860,0])
+
+            print("opencv imread, size:",self.img_size, self.stride)
             assert img0 is not None, 'Image Not Found ' + path
             print(f'image {self.count}/{self.nf} {path}: ', end='')
 
         # Padded resize
         img = letterbox(img0, self.img_size, stride=self.stride)[0]
-
+        print("img:",img.shape)
+        cv2.imwrite("pad.jpg",img)
         # Convert
         img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
         img = np.ascontiguousarray(img)

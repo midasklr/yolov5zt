@@ -99,6 +99,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     t0 = time.time()
     for path, img, im0s, vid_cap in dataset:
         if pt:
+            print("half presion, augment:",augment)
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
         elif onnx:
@@ -114,11 +115,10 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             pred = model(img, augment=augment, visualize=visualize)[0]
         elif onnx:
             pred = torch.tensor(session.run([session.get_outputs()[0].name], {session.get_inputs()[0].name: img}))
-        t2 = time_sync()
-        print("infer:",(t2-t1)*1000," ms")
+
         # NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
-
+        t2 = time_sync()
 
         # Second-stage classifier (optional)
         if classify:
@@ -200,10 +200,10 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='/home/hwits/Documents/CarVid/yolov5zt/weights/lastyolov5s.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='/home/hwits/Documents/CarVid/yolov5zt/data/test', help='file/dir/URL/glob, 0 for webcam')
-    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=1280, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.3, help='confidence threshold')
+    parser.add_argument('--weights', nargs='+', type=str, default='/home/hwits/Documents/CarVid/yolov5/runs/train/exp6/weights/last.pt', help='model.pt path(s)')
+    parser.add_argument('--source', type=str, default='data/images', help='file/dir/URL/glob, 0 for webcam')
+    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
+    parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')

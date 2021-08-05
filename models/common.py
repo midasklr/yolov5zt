@@ -183,6 +183,20 @@ class Focus(nn.Module):
         # return self.conv(self.contract(x))
 
 
+class FocusV2(nn.Module):
+    # Focus wh information into c-space
+    def __init__(self, c1, c2, k=1, s=1, p=None, g=1, act=True):  # ch_in, ch_out, kernel, stride, padding, groups
+        super().__init__()
+        self.conv = Conv(c1 * 9, c2, k, s, p, g, act)
+        # self.contract = Contract(gain=2)
+
+    def forward(self, x):  # x(b,c,w,h) -> y(b,4c,w/2,h/2)
+        return self.conv(torch.cat([x[..., ::3, ::3], x[..., 1::3, ::3], x[..., 2::3, ::3],
+                                    x[..., ::3, 1::3],x[..., 1::3, 1::3],x[..., 2::3, 1::3],
+                                    x[..., ::3, 2::3],x[..., 1::3, 2::3],x[..., 2::3, 2::3]], 1))
+        # return self.conv(self.contract(x))
+
+
 class Contract(nn.Module):
     # Contract width-height into channels, i.e. x(1,64,80,80) to x(1,256,40,40)
     def __init__(self, gain=2):
